@@ -32,11 +32,14 @@
   img.foto{width:100%;border-radius:10px;display:block}
   .empty{color:#9ca3af;font-size:13px}
   .foot{text-align:center;color:#9ca3af;font-size:12px;padding:8px 0 20px}
+  .kat{font-size:12px;color:#6b7280;margin:12px 0 6px}.kat:first-of-type{margin-top:0}
+  .sopi{border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+  .sopi b{font-size:14px}.sopi .no{font-size:12px;color:#374151;word-break:break-all}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">SIKAP <span class="sub" style="font-weight:400">Sistem Inventaris Kalibrasi Pemeliharaan Alat</span></div>
+  <div class="brand">SIKAP <span class="sub" style="font-weight:400">Sistem Inventaris, Kalibrasi, Pemeliharaan Alat</span></div>
   <div id="app"></div>
   <div class="foot">Halaman hanya baca</div>
 </div>
@@ -154,6 +157,28 @@ function render(DATA) {
       });
       k.appendChild(tl);
     }
+  }
+
+  const so = card('SOP');
+  const sopList = DATA.sop || [];
+  if (!sopList.length) {
+    so.appendChild(el('p', 'empty', 'Belum ada SOP yang terhubung dengan alat ini.'));
+  } else {
+    let katSaatIni = null;
+    sopList.forEach(function (x) {
+      if (x.Kategori !== katSaatIni) { katSaatIni = x.Kategori; so.appendChild(el('div', 'kat', x.Kategori)); }
+      const it = el('div', 'sopi');
+      it.appendChild(el('b', '', x.Judul));
+      it.appendChild(el('div', 'no', x.Nomor));
+      it.appendChild(el('div', 'sub', 'Rev. ' + x.Revisi + ' · terbit ' + fmtTgl(x.Terbit)));
+      if (x.FileId) {
+        const l = el('a', 'pdf', 'Lihat SOP PDF');
+        l.href = 'https://drive.google.com/file/d/' + x.FileId + '/view';
+        l.target = '_blank'; l.rel = 'noopener';
+        it.appendChild(l);
+      }
+      so.appendChild(it);
+    });
   }
 
   const p = card('Perbaikan terakhir');
